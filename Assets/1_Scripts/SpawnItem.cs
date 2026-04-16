@@ -5,7 +5,9 @@ public class SpawnItem : MonoBehaviour
 {
     public GameObject[] items;
     public ItemSO[] itemData;
-    public float dt;
+
+    public float startRandom;
+    public float endRandom;
 
     void Start()
     {
@@ -20,7 +22,7 @@ public class SpawnItem : MonoBehaviour
         
             GameObject item = Instantiate(items[randomItem], transform.position, Quaternion.identity);
         
-            yield return new WaitForSeconds(Random.Range(1.5f, dt));
+            yield return new WaitForSeconds(Random.Range(startRandom, endRandom));
         }
     }
 }
