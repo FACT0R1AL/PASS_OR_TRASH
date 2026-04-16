@@ -18,7 +18,16 @@ public class ConveyorMove : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        collision.transform.position += moveDir * moveSpeed * Time.deltaTime;
-        Debug.Log(collision.gameObject.name);
+        if (collision.transform.parent.CompareTag("Conveyor"))
+        {
+            collision.transform.parent = gameObject.transform;
+            collision.transform.position += moveDir * moveSpeed * Time.deltaTime;
+            Debug.Log(collision.gameObject.name);
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        collision.transform.parent = null;
     }
 }
