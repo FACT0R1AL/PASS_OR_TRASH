@@ -1,0 +1,26 @@
+using UnityEngine;
+using System.Collections;
+
+public class SpawnItem : MonoBehaviour
+{
+    public GameObject[] items;
+    public ItemSO[] itemData;
+    public float dt;
+
+    void Start()
+    {
+        StartCoroutine(Spawn());
+    }
+    
+    IEnumerator Spawn()
+    {
+        while (true)
+        {
+            int randomItem = Random.Range(0, items.Length);
+        
+            GameObject item = Instantiate(items[randomItem], transform.position, Quaternion.identity);
+        
+            yield return new WaitForSeconds(Random.Range(1.5f, dt));
+        }
+    }
+}
