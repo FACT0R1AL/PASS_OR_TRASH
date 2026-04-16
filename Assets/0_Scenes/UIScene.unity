@@ -508,7 +508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Clock
   clockText: {fileID: 1354195706}
   startHour: 9
-  endHour: 10
+  endHour: 18
   timeMultiplier: 1
 --- !u!4 &1354415749
 Transform:
