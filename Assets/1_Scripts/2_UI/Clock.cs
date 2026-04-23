@@ -4,8 +4,9 @@ using TMPro;
 
 public class Clock : MonoBehaviour
 {
-    [Header("ClockText")]
-    public TextMeshProUGUI clockText;
+    [Header("UI 연결")]
+    public TextMeshProUGUI clockText;   // Clock Text
+    public GameObject endPanel;         // 종료시간때 나타날 패널
 
     [Header("시간 설정")]
     public float startHour = 9f;        // 시작시간(09:00)
