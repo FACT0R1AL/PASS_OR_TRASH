@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "Item/Item", order = 1)]
-public class ItemSO : ScriptableObject
+[CreateAssetMenu(fileName = "Item", menuName = "Item/ItemData", order = 1)]
+public class ItemData : ScriptableObject
 {
     public string itemName;
     public string itemDescription;
