@@ -63,7 +63,7 @@ public class ObjectGrabber : MonoBehaviour
 
                     isHolding = true;
 
-                    // 🔥 이동 + 시점 완전 차단
+                    // 이동 + 시점 완전 차단
                     if (fpsController != null)
                     {
                         fpsController.canLook = false;
@@ -85,7 +85,7 @@ public class ObjectGrabber : MonoBehaviour
 
     void RotateObject()
     {
-        // 🔥 우클릭 시 물체만 회전
+        // 우클릭 시 물체만 회전
         if (Input.GetMouseButton(1))
         {
             float mouseX = Input.GetAxis("Mouse X") * rotateSpeed * 100f * Time.deltaTime;
@@ -102,7 +102,7 @@ public class ObjectGrabber : MonoBehaviour
         grabbedObject = null;
         isHolding = false;
 
-        // 🔥 다시 이동 + 시점 허용
+        // 다시 이동 + 시점 허용
         if (fpsController != null)
         {
             fpsController.canLook = true;
