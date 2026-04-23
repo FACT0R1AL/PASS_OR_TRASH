@@ -632,7 +632,7 @@ Transform:
   m_GameObject: {fileID: 1646173167}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7, y: 5, z: 0}
+  m_LocalPosition: {x: -7, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -652,10 +652,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpawnItem
   items:
   - {fileID: 5215835215551382212, guid: 986cdfaf3b5824017b73ad02e8420a49, type: 3}
-  - {fileID: 919132149155446097, guid: bd356a7fde93d4e2299e1f8870f45bbb, type: 3}
+  - {fileID: 7696859329125424638, guid: 2b551be623fe14ebabcfbff37ec8cad7, type: 3}
   itemData: []
-  startRandom: 0.2
-  endRandom: 0.3
+  startRandom: 1.2
+  endRandom: 1.5
 --- !u!1001 &1915777676138151930
 PrefabInstance:
   m_ObjectHideFlags: 0

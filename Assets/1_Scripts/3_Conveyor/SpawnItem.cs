@@ -20,7 +20,7 @@ public class SpawnItem : MonoBehaviour
         {
             int randomItem = Random.Range(0, items.Length);
         
-            GameObject item = Instantiate(items[randomItem], transform.position, Quaternion.identity);
+            GameObject item = Instantiate(items[randomItem], transform.position, items[randomItem].transform.rotation);
         
             yield return new WaitForSeconds(Random.Range(startRandom, endRandom));
         }
