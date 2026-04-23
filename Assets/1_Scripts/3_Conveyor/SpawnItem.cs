@@ -4,7 +4,7 @@ using System.Collections;
 public class SpawnItem : MonoBehaviour
 {
     public GameObject[] items;
-    public ItemSO[] itemData;
+    public ItemData[] itemData;
 
     public float startRandom;
     public float endRandom;

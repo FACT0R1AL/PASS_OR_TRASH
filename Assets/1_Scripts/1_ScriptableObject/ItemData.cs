@@ -9,4 +9,6 @@ public class ItemData : ScriptableObject
 
     public DateTime itemExpireDate;
     public DateTime itemCreateDate;
+
+    public Sprite itemImage;
 }
