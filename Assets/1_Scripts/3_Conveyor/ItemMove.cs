@@ -13,10 +13,4 @@ public class ItemMove : MonoBehaviour
             transform.position += conveyor.GetComponent<Conveyor>().moveSpeed * conveyor.GetComponent<Conveyor>().moveDir * Time.deltaTime;
         }
     }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(transform.position, transform.localScale);
-    }
 }
