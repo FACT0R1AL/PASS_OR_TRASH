@@ -64,6 +64,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SmartPhone
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: bd356a7fde93d4e2299e1f8870f45bbb, type: 3}
+      propertyPath: m_TagString
+      value: Object
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -141,5 +145,5 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
