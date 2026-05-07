@@ -16,11 +16,6 @@ public class ItemBookController : MonoBehaviour
 
     private int currentIndex = 0;
 
-    private void Awake()
-    {
-        if(bookOverlay != null) bookOverlay.SetActive(false);
-    }
-
     // 도감 열기 
     public void OpenBoook()
     {
