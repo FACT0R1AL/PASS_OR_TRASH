@@ -1,23 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(CharacterController))]
 public class FPSController : MonoBehaviour
 {
-    [Header("Movement")]
-    public float speed = 5f;
-    public float gravity = -9.8f;
-    public float jumpForce = 1.5f;
-
-    [Header("Mouse Look")]
+    [Header("Look")]
     public float sensitivity = 100f;
     public Transform cameraTransform;
 
     public bool canLook = true;
     public bool canMove = true;
-
-    CharacterController controller;
-    InputSystemActions inputActions;
 
     Vector2 moveInput;
     Vector2 lookInput;
@@ -27,55 +18,13 @@ public class FPSController : MonoBehaviour
 
     void Awake()
     {
-        controller = GetComponent<CharacterController>();
-        inputActions = new InputSystemActions();
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-    void OnEnable()
-    {
-        inputActions.Enable();
-    }
-
-    void OnDisable()
-    {
-        inputActions.Disable();
-    }
-
     void Update()
     {
-        GetInput();
-        Move();
         Look();
-    }
-
-    void GetInput()
-    {
-        moveInput = inputActions.Player.Move.ReadValue<Vector2>();
-        lookInput = inputActions.Player.Look.ReadValue<Vector2>();
-
-        if (inputActions.Player.Jump.triggered && controller.isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
-        }
-    }
-
-    void Move()
-    {
-        if (!canMove) return;
-
-        Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
-        controller.Move(move * speed * Time.deltaTime);
-
-        if (controller.isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f;
-        }
-
-        velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
     }
 
     void Look()
