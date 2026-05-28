@@ -80,7 +80,7 @@ public class FirstPersonCamera : MonoBehaviour
         {
             if (isHolding)
             {
-                if (Keyboard.current != null && Keyboard.current.shiftKey.isPressed)
+                if (Keyboard.current.shiftKey.isPressed)
                 {
                     ThrowObject();
                 }
@@ -117,7 +117,6 @@ public class FirstPersonCamera : MonoBehaviour
                     objectBoxSize = new Vector3(0.3f, 0.3f, 0.3f);
                 }
 
-                // 플레이어를 밀쳐서 날아오르는 버그 방지를 위해 트리거 모드 ON
                 if (grabbedCollider != null) grabbedCollider.isTrigger = true;
 
                 objectRb.useGravity = false; 
@@ -128,7 +127,6 @@ public class FirstPersonCamera : MonoBehaviour
         }
     }
 
-    // ★ 다른 물체(오브젝트)들까지 가로막는 장애물로 인식하도록 수정된 핵심 로직
     void HoldObjectWithBoxCast()
     {
         if (grabbedObject == null) return;
@@ -136,12 +134,10 @@ public class FirstPersonCamera : MonoBehaviour
         Vector3 startPos = Camera.transform.position;
         Vector3 dir = Camera.transform.forward;
         
-        // 물체의 크기와 회전값을 그대로 반영한 두꺼운 박스 레이 발사 (모든 충돌체 감지)
         RaycastHit[] hits = Physics.BoxCastAll(startPos, objectBoxSize, dir, grabbedObject.transform.rotation, holdDistance);
         
         float targetDistance = holdDistance;
-
-        // 거리가 가까운 순서대로 정렬하여 정밀도 향상
+        
         System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
 
         foreach (RaycastHit hit in hits)
@@ -155,7 +151,7 @@ public class FirstPersonCamera : MonoBehaviour
             // 예외 3: 맵에 배치된 투명한 감지 영역(Trigger) 패스 (진짜 물리 콜라이더만 막히게)
             if (hit.collider.isTrigger) continue;
 
-            // [수정 핵심]: 벽, 바닥뿐만 아니라 '다른 물체들'에 부딪혀도 거기를 마지노선으로 잡고 멈춤
+            // 벽, 바닥뿐만 아니라 '다른 물체들'에 부딪혀도 거기를 마지노선으로 잡고 멈춤
             targetDistance = hit.distance;
             break;
         }
@@ -195,13 +191,12 @@ public class FirstPersonCamera : MonoBehaviour
     
     void ThrowObject()
     {
-        Rigidbody rbToThrow = objectRb; 
         ReleaseObject();
         
         Vector3 throwDirection = (Camera.transform.forward + Camera.transform.up * 0.1f).normalized;
-        float throwForce = 10f; 
+        float throwForce = 5f; 
         
-        rbToThrow.AddForce(throwDirection * throwForce, ForceMode.Impulse);
+        objectRb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
         
         grabbedCollider = null;
         objectRb = null;

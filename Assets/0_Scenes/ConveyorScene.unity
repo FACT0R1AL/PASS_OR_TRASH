@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 107981854}
   - component: {fileID: 107981853}
   - component: {fileID: 107981852}
-  - component: {fileID: 107981851}
+  - component: {fileID: 107981855}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -143,28 +143,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!64 &107981851
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 107981850}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &107981852
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -237,6 +215,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1552188882}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!65 &107981855
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107981850}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.0000002, z: 0.3}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,8 +324,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -826,7 +825,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnItem
   items:
-  - {fileID: 5215835215551382212, guid: 986cdfaf3b5824017b73ad02e8420a49, type: 3}
   - {fileID: 7696859329125424638, guid: 2b551be623fe14ebabcfbff37ec8cad7, type: 3}
   itemData: []
   startRandom: 1.2
@@ -1044,7 +1042,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.63, z: -1.856}
-  m_LocalScale: {x: 0.1, y: 1.5, z: 0.1}
+  m_LocalScale: {x: 0.1, y: 1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 330585546}
@@ -1092,6 +1090,7 @@ MonoBehaviour:
   speed: 2.3
   moveInput: {x: 0, y: 0}
   cameraTransform: {fileID: 330585546}
+  defaultCameraY: 0.4
 --- !u!1001 &1915777676138151930
 PrefabInstance:
   m_ObjectHideFlags: 0

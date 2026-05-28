@@ -12,8 +12,8 @@ public class Player : MonoBehaviour
     [Header("Headbob Settings")] 
     public Transform cameraTransform;
     
+    [SerializeField] private float defaultCameraY = 3f;
     private float bobTimer = 0f;
-    private float defaultCameraY = 0f;
     
     void Update()
     {
