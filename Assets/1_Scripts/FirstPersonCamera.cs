@@ -6,6 +6,7 @@ public class FirstPersonCamera : MonoBehaviour
 {
     [Header("Player")]
     public GameObject player;
+    private Collider playerCollider; 
     
     [Header("Look")]
     public float sensitivity = 100f;
@@ -17,47 +18,71 @@ public class FirstPersonCamera : MonoBehaviour
     [Header("Grab Settings")] 
     public float grabDistance;
     public float holdDistance;
-    public float rotateSpeed;
-    public float time;
+    public float rotateSpeed = 250f; 
+    public float lerpSpeed = 20f; // 물체가 카메라 앞을 쫓아오는 속도
     
     [Header("About GrabbedObject")]
-    private GameObject grabbedObject;
-    private Rigidbody objectRb;
+    [SerializeField] private GameObject grabbedObject;
+    [SerializeField] private Rigidbody objectRb;
+    [SerializeField] private Collider grabbedCollider; 
     [SerializeField] private bool isHolding;
     [SerializeField] private bool isReturning;
     
-    // 입력 값을 저장할 변수들
-    private Vector2 rotateInput;
-    private bool isRotateMode;
-    
-    private Vector3 lastConveyorPos;
-    private Quaternion lastConveyorRot;
-    
+    void Start()
+    {
+        if (player != null)
+        {
+            playerCollider = player.GetComponent<Collider>();
+            if (playerCollider == null)
+            {
+                playerCollider = player.GetComponentInParent<Collider>();
+            }
+        }
+    }
+
     void Update()
     {
-        // 만약 잡고 있을경우
-        if (isHolding)
+        if (Mouse.current != null)
         {
-            HoldObject();
-            
-            if (isRotateMode)
+            if (isHolding && Mouse.current.leftButton.isPressed)
             {
                 RotateObject();
             }
+            else if (Mouse.current.rightButton.isPressed)
+            {
+                RotateCamera();
+            }
         }
-        // 아니라면 카메라 움직이기 가능
-        else
+    }
+
+    // 물리 이동은 FixedUpdate에서 처리해야 벽 관통과 떨림이 방지됩니다.
+    void FixedUpdate()
+    {
+        if (isHolding)
         {
-            float mouseX = lookInput.x * sensitivity * Time.deltaTime;
-            float mouseY = lookInput.y * sensitivity * Time.deltaTime;
-        
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -80f, 80f);
-        
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        
-            player.transform.Rotate(Vector3.up * mouseX); 
+            HoldObjectPhysics();
         }
+    }
+    
+    void RotateCamera()
+    {
+        float mouseX = lookInput.x * sensitivity * Time.deltaTime;
+        float mouseY = lookInput.y * sensitivity * Time.deltaTime;
+    
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -80f, 80f); 
+    
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        player.transform.Rotate(Vector3.up * mouseX); 
+    }
+
+    void RotateObject()
+    {
+        float x = lookInput.x * rotateSpeed * Time.deltaTime;
+        float y = lookInput.y * rotateSpeed * Time.deltaTime;
+
+        grabbedObject.transform.Rotate(Camera.transform.up, -x, Space.World);
+        grabbedObject.transform.Rotate(Camera.transform.right, y, Space.World);
     }
     
     public void OnLook(InputAction.CallbackContext context)
@@ -65,32 +90,26 @@ public class FirstPersonCamera : MonoBehaviour
         lookInput = context.ReadValue<Vector2>();
     }
     
-    // E키
     public void OnGrab(InputAction.CallbackContext context)
     {
-        // 버튼을 누른 순간(Started)에만 실행
-        if (context.started && !isReturning)
+        if (context.started)
         {
             if (isHolding)
             {
-                DropObject();
+                if (Keyboard.current != null && Keyboard.current.shiftKey.isPressed)
+                {
+                    ThrowObject();
+                }
+                else 
+                {
+                    DropObject();
+                }
             }
             else
             {
                 TryGrab();
             }
         }
-    }
-    
-    public void OnRotateMode(InputAction.CallbackContext context)
-    {
-        if (context.started) isRotateMode = true;
-        else if (context.canceled) isRotateMode = false;
-    }
-    
-    public void OnRotateValue(InputAction.CallbackContext context)
-    {
-        rotateInput = context.ReadValue<Vector2>();
     }
 
     void TryGrab()
@@ -102,79 +121,82 @@ public class FirstPersonCamera : MonoBehaviour
             {
                 grabbedObject = hit.collider.gameObject;
                 objectRb = grabbedObject.GetComponent<Rigidbody>();
+                grabbedCollider = grabbedObject.GetComponent<Collider>();
                 
+                // 잡고 있을 때는 중력을 끄고, 힘으로 제어합니다.
                 objectRb.useGravity = false; 
+                objectRb.isKinematic = false; 
                 objectRb.freezeRotation = true;
-                isHolding = true;
                 
-                lastConveyorPos = grabbedObject.transform.position + new Vector3(0f, 0.5f, 0f);
-                lastConveyorRot = grabbedObject.transform.rotation;
+                // 공중에서 덜덜거리며 진동하는 것을 막기 위해 공기 저항을 높입니다.
+                objectRb.linearDamping = 10f; 
+                objectRb.angularDamping = 10f;
 
-                StartCoroutine(CameraUp(time));
+                isHolding = true;
+
+                // 플레이어와 물체 간의 물리적 충돌만 꺼서 플레이어가 밀리는 현상 방지
+                if (playerCollider != null && grabbedCollider != null)
+                {
+                    Physics.IgnoreCollision(playerCollider, grabbedCollider, true);
+                }
             }
         }
     }
 
-    private IEnumerator CameraUp(float time)
+    void HoldObjectPhysics()
     {
-        float t = 0f;
-        Vector3 currentEuler = Camera.transform.rotation.eulerAngles;
-        Quaternion startRot = Camera.transform.rotation;
-        Quaternion endRot = Quaternion.Euler(0f, currentEuler.y, currentEuler.z);
-        
-        while (t <= 1f)
-        {
-            t += Time.deltaTime / time;
-            Camera.transform.rotation = Quaternion.Lerp(startRot, endRot, t);
-            yield return null;
-        }
-    }
+        if (grabbedObject == null || objectRb == null) return;
 
-    void HoldObject()
-    {
+        // 카메라 앞 목표 좌표
         Vector3 targetPos = Camera.transform.position + Camera.transform.forward * holdDistance;
-        // Vector3 direction = targetPos - grabbedObject.transform.position;
-        //
-        // objectRb.linearVelocity = direction * moveSpeed;
-
-        grabbedObject.transform.position = targetPos;
-    }
-
-    void RotateObject()
-    {
-        float x = rotateInput.x * rotateSpeed;
-        float y = rotateInput.y * rotateSpeed;
-
-        grabbedObject.transform.Rotate(Camera.transform.up, -x, Space.World);
-        grabbedObject.transform.Rotate(Camera.transform.right, y, Space.World);
-    }
-
-    void DropObject() => StartCoroutine(BackToConveyor(time));
-
-    IEnumerator BackToConveyor(float time)
-    {
-        isHolding = false;
-        isReturning = true;
         
-        float t = 0f;
-        Vector3 startPos = grabbedObject.transform.position;
-        Quaternion startRot = grabbedObject.transform.rotation;
+        // 방향 벡터 계산
+        Vector3 moveDirection = targetPos - grabbedObject.transform.position;
+        
+        // Rigidbody 속도로 밀어주어 벽이나 바닥에 부딪히면 물리적으로 멈추게 합니다.
+        objectRb.linearVelocity = moveDirection * lerpSpeed;
+    }
 
-        while (t <= 1f)
+    // ★ 중력 및 모든 물리 설정을 완벽하게 되돌리는 리셋 함수
+    void ResetObjectPhysics()
+    {
+        if (playerCollider != null && grabbedCollider != null)
         {
-            t += Time.deltaTime / time;
-            grabbedObject.transform.position = Vector3.Lerp(startPos, lastConveyorPos, t);
-            grabbedObject.transform.rotation = Quaternion.Lerp(startRot, lastConveyorRot, t);
-            yield return null;
+            Physics.IgnoreCollision(playerCollider, grabbedCollider, false);
         }
-        
-        // grabbedObject관련 변수 초기화
-        objectRb.useGravity = true;
-        objectRb.freezeRotation = false;
-        objectRb.linearVelocity = Vector3.zero;
+
+        if (objectRb != null)
+        {
+            objectRb.useGravity = true;     // ★ 중력 다시 켜기 복구
+            objectRb.isKinematic = false;
+            objectRb.linearDamping = 0f;    // 저항값 원래대로 복구
+            objectRb.angularDamping = 0.05f;
+            objectRb.freezeRotation = false;
+        }
+    }
+
+    void DropObject()
+    {
+        ResetObjectPhysics();
+        isHolding = false;
         
         objectRb = null;
+        grabbedCollider = null;
         grabbedObject = null;
-        isReturning = false;
+    }
+    
+    void ThrowObject()
+    {
+        ResetObjectPhysics();
+        isHolding = false;
+        
+        Vector3 throwDirection = (Camera.transform.forward + Camera.transform.up * 0.2f).normalized;
+        float throwForce = 12f; 
+        
+        objectRb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
+        
+        objectRb = null;
+        grabbedCollider = null;
+        grabbedObject = null;
     }
 }

@@ -111,18 +111,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""RotateMode"",
-                    ""type"": ""Button"",
-                    ""id"": ""389edd95-f50d-4217-bc18-49ba4e5dc975"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""RotateValue"",
+                    ""name"": ""Move"",
                     ""type"": ""Value"",
-                    ""id"": ""75d98e1e-aa1f-43b6-8421-1965aef9c2f9"",
+                    ""id"": ""9edd0bc7-019d-4228-9c63-bf1627bf3327"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -153,26 +144,59 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""c5f4ebc5-fb2f-4756-92fe-aec3fd56299a"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""name"": ""2D Vector"",
+                    ""id"": ""63bd13a8-5c55-41d0-a59e-a08f69332d71"",
+                    ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RotateMode"",
-                    ""isComposite"": false,
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""05f3bfab-60f8-4201-b41b-e4e2dd423f41"",
-                    ""path"": ""<Mouse>/delta"",
+                    ""name"": ""up"",
+                    ""id"": ""fb90e59a-ae3b-4123-b1f0-4e82eb75eabf"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RotateValue"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
-                    ""isPartOfComposite"": false
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""95dcd892-8ed7-4a2a-ae28-c7496e0f8f6b"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""f200e2a5-ed8f-4899-9d8a-a2de0ac05587"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""38b0d930-cc27-4cdc-8d56-cb35b5a672b2"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -183,8 +207,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Grab = m_Player.FindAction("Grab", throwIfNotFound: true);
-        m_Player_RotateMode = m_Player.FindAction("RotateMode", throwIfNotFound: true);
-        m_Player_RotateValue = m_Player.FindAction("RotateValue", throwIfNotFound: true);
+        m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -267,8 +290,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Grab;
-    private readonly InputAction m_Player_RotateMode;
-    private readonly InputAction m_Player_RotateValue;
+    private readonly InputAction m_Player_Move;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -289,13 +311,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Grab => m_Wrapper.m_Player_Grab;
         /// <summary>
-        /// Provides access to the underlying input action "Player/RotateMode".
+        /// Provides access to the underlying input action "Player/Move".
         /// </summary>
-        public InputAction @RotateMode => m_Wrapper.m_Player_RotateMode;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/RotateValue".
-        /// </summary>
-        public InputAction @RotateValue => m_Wrapper.m_Player_RotateValue;
+        public InputAction @Move => m_Wrapper.m_Player_Move;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -328,12 +346,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Grab.started += instance.OnGrab;
             @Grab.performed += instance.OnGrab;
             @Grab.canceled += instance.OnGrab;
-            @RotateMode.started += instance.OnRotateMode;
-            @RotateMode.performed += instance.OnRotateMode;
-            @RotateMode.canceled += instance.OnRotateMode;
-            @RotateValue.started += instance.OnRotateValue;
-            @RotateValue.performed += instance.OnRotateValue;
-            @RotateValue.canceled += instance.OnRotateValue;
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
         }
 
         /// <summary>
@@ -351,12 +366,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Grab.started -= instance.OnGrab;
             @Grab.performed -= instance.OnGrab;
             @Grab.canceled -= instance.OnGrab;
-            @RotateMode.started -= instance.OnRotateMode;
-            @RotateMode.performed -= instance.OnRotateMode;
-            @RotateMode.canceled -= instance.OnRotateMode;
-            @RotateValue.started -= instance.OnRotateValue;
-            @RotateValue.performed -= instance.OnRotateValue;
-            @RotateValue.canceled -= instance.OnRotateValue;
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
         }
 
         /// <summary>
@@ -412,18 +424,11 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnGrab(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "RotateMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRotateMode(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "RotateValue" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRotateValue(InputAction.CallbackContext context);
+        void OnMove(InputAction.CallbackContext context);
     }
 }

@@ -25,18 +25,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "RotateMode",
-                    "type": "Button",
-                    "id": "389edd95-f50d-4217-bc18-49ba4e5dc975",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "RotateValue",
+                    "name": "Move",
                     "type": "Value",
-                    "id": "75d98e1e-aa1f-43b6-8421-1965aef9c2f9",
+                    "id": "9edd0bc7-019d-4228-9c63-bf1627bf3327",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -67,26 +58,59 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "c5f4ebc5-fb2f-4756-92fe-aec3fd56299a",
-                    "path": "<Mouse>/rightButton",
+                    "name": "2D Vector",
+                    "id": "63bd13a8-5c55-41d0-a59e-a08f69332d71",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RotateMode",
-                    "isComposite": false,
+                    "action": "Move",
+                    "isComposite": true,
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "05f3bfab-60f8-4201-b41b-e4e2dd423f41",
-                    "path": "<Mouse>/delta",
+                    "name": "up",
+                    "id": "fb90e59a-ae3b-4123-b1f0-4e82eb75eabf",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RotateValue",
+                    "action": "Move",
                     "isComposite": false,
-                    "isPartOfComposite": false
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "95dcd892-8ed7-4a2a-ae28-c7496e0f8f6b",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "f200e2a5-ed8f-4899-9d8a-a2de0ac05587",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "38b0d930-cc27-4cdc-8d56-cb35b5a672b2",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
