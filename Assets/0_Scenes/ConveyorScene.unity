@@ -326,7 +326,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -389,14 +389,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirstPersonCamera
   player: {fileID: 1894902189}
-  sensitivity: 100
+  sensitivity: 250
   Camera: {fileID: 330585543}
-  grabDistance: 3
-  holdDistance: 0.7
-  rotateSpeed: 0.5
-  time: 0.2
+  grabDistance: 5
+  holdDistance: 1.3
+  minHoldDistance: 0.5
+  rotateSpeed: 180
+  grabbedObject: {fileID: 0}
+  objectRb: {fileID: 0}
+  grabbedCollider: {fileID: 0}
   isHolding: 0
-  isReturning: 0
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,9 +458,9 @@ MonoBehaviour:
     m_ActionName: 'Player/Grab[/Keyboard/e]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 330585548}
-        m_TargetAssemblyTypeName: FirstPersonCamera, Assembly-CSharp
-        m_MethodName: OnRotateMode
+      - m_Target: {fileID: 1894902195}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: OnMove
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -468,24 +470,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_ActionId: 389edd95-f50d-4217-bc18-49ba4e5dc975
-    m_ActionName: 'Player/RotateMode[/Mouse/rightButton]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 330585548}
-        m_TargetAssemblyTypeName: FirstPersonCamera, Assembly-CSharp
-        m_MethodName: OnRotateValue
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 75d98e1e-aa1f-43b6-8421-1965aef9c2f9
-    m_ActionName: 'Player/RotateValue[/Mouse/delta]'
+    m_ActionId: 9edd0bc7-019d-4228-9c63-bf1627bf3327
+    m_ActionName: 'Player/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -947,50 +933,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &1830914934
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1830914936}
-  - component: {fileID: 1830914935}
-  m_Layer: 0
-  m_Name: ObjectGrabber
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1830914935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1830914934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e77ad2926d2c4c4a85b811903e94ed0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObjectGrabber
---- !u!4 &1830914936
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1830914934}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1894902189
 GameObject:
   m_ObjectHideFlags: 0
@@ -1002,6 +944,7 @@ GameObject:
   - component: {fileID: 1894902193}
   - component: {fileID: 1894902192}
   - component: {fileID: 1894902191}
+  - component: {fileID: 1894902195}
   - component: {fileID: 1894902190}
   - component: {fileID: 1894902194}
   m_Layer: 0
@@ -1030,7 +973,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -1100,8 +1043,8 @@ Transform:
   m_GameObject: {fileID: 1894902189}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: -1.856}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: 0, y: 1.63, z: -1.856}
+  m_LocalScale: {x: 0.1, y: 1.5, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 330585546}
@@ -1134,6 +1077,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &1894902195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894902189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84962e84e75cd4babacbcf1815456502, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player
+  speed: 2.3
+  moveInput: {x: 0, y: 0}
+  cameraTransform: {fileID: 330585546}
 --- !u!1001 &1915777676138151930
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1203,5 +1161,4 @@ SceneRoots:
   - {fileID: 1733715130}
   - {fileID: 1526258479}
   - {fileID: 1894902193}
-  - {fileID: 1830914936}
   - {fileID: 1552188882}

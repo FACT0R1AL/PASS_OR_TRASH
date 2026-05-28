@@ -17,47 +17,56 @@ public class FirstPersonCamera : MonoBehaviour
     [Header("Grab Settings")] 
     public float grabDistance;
     public float holdDistance;
-    public float rotateSpeed;
-    public float time;
+    public float minHoldDistance = 0.5f; // 카메라 침범 방지 최소 거리
+    public float rotateSpeed = 250f;
     
     [Header("About GrabbedObject")]
-    private GameObject grabbedObject;
-    private Rigidbody objectRb;
+    [SerializeField] private GameObject grabbedObject;
+    [SerializeField] private Rigidbody objectRb;
+    [SerializeField] private Collider grabbedCollider; 
     [SerializeField] private bool isHolding;
-    [SerializeField] private bool isReturning;
-    
-    // 입력 값을 저장할 변수들
-    private Vector2 rotateInput;
-    private bool isRotateMode;
-    
-    private Vector3 lastConveyorPos;
-    private Quaternion lastConveyorRot;
-    
+
+    private Vector3 objectBoxSize; // 물체의 실제 크기(Box형태 부피) 저장용
+
     void Update()
     {
-        // 만약 잡고 있을경우
         if (isHolding)
         {
-            HoldObject();
-            
-            if (isRotateMode)
+            HoldObjectWithBoxCast();
+        }
+
+        if (Mouse.current != null)
+        {
+            if (isHolding && Mouse.current.leftButton.isPressed)
             {
                 RotateObject();
             }
+            else if (Mouse.current.rightButton.isPressed)
+            {
+                RotateCamera();
+            }
         }
-        // 아니라면 카메라 움직이기 가능
-        else
-        {
-            float mouseX = lookInput.x * sensitivity * Time.deltaTime;
-            float mouseY = lookInput.y * sensitivity * Time.deltaTime;
-        
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -80f, 80f);
-        
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        
-            player.transform.Rotate(Vector3.up * mouseX); 
-        }
+    }
+    
+    void RotateCamera()
+    {
+        float mouseX = lookInput.x * sensitivity * Time.deltaTime;
+        float mouseY = lookInput.y * sensitivity * Time.deltaTime;
+    
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -80f, 80f); 
+    
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        player.transform.Rotate(Vector3.up * mouseX); 
+    }
+
+    void RotateObject()
+    {
+        float x = lookInput.x * rotateSpeed * Time.deltaTime;
+        float y = lookInput.y * rotateSpeed * Time.deltaTime;
+
+        grabbedObject.transform.Rotate(Camera.transform.up, -x, Space.World);
+        grabbedObject.transform.Rotate(Camera.transform.right, y, Space.World);
     }
     
     public void OnLook(InputAction.CallbackContext context)
@@ -65,32 +74,26 @@ public class FirstPersonCamera : MonoBehaviour
         lookInput = context.ReadValue<Vector2>();
     }
     
-    // E키
     public void OnGrab(InputAction.CallbackContext context)
     {
-        // 버튼을 누른 순간(Started)에만 실행
-        if (context.started && !isReturning)
+        if (context.started)
         {
             if (isHolding)
             {
-                DropObject();
+                if (Keyboard.current != null && Keyboard.current.shiftKey.isPressed)
+                {
+                    ThrowObject();
+                }
+                else 
+                {
+                    DropObject();
+                }
             }
             else
             {
                 TryGrab();
             }
         }
-    }
-    
-    public void OnRotateMode(InputAction.CallbackContext context)
-    {
-        if (context.started) isRotateMode = true;
-        else if (context.canceled) isRotateMode = false;
-    }
-    
-    public void OnRotateValue(InputAction.CallbackContext context)
-    {
-        rotateInput = context.ReadValue<Vector2>();
     }
 
     void TryGrab()
@@ -102,79 +105,106 @@ public class FirstPersonCamera : MonoBehaviour
             {
                 grabbedObject = hit.collider.gameObject;
                 objectRb = grabbedObject.GetComponent<Rigidbody>();
+                grabbedCollider = grabbedObject.GetComponent<Collider>();
                 
+                // 물체의 실제 콜라이더 크기(바운드 외곽)를 계산해서 저장
+                if (grabbedCollider != null)
+                {
+                    objectBoxSize = grabbedCollider.bounds.extents;
+                }
+                else
+                {
+                    objectBoxSize = new Vector3(0.3f, 0.3f, 0.3f);
+                }
+
+                // 플레이어를 밀쳐서 날아오르는 버그 방지를 위해 트리거 모드 ON
+                if (grabbedCollider != null) grabbedCollider.isTrigger = true;
+
                 objectRb.useGravity = false; 
+                objectRb.isKinematic = true; 
                 objectRb.freezeRotation = true;
                 isHolding = true;
-                
-                lastConveyorPos = grabbedObject.transform.position + new Vector3(0f, 0.5f, 0f);
-                lastConveyorRot = grabbedObject.transform.rotation;
-
-                StartCoroutine(CameraUp(time));
             }
         }
     }
 
-    private IEnumerator CameraUp(float time)
+    // ★ 다른 물체(오브젝트)들까지 가로막는 장애물로 인식하도록 수정된 핵심 로직
+    void HoldObjectWithBoxCast()
     {
-        float t = 0f;
-        Vector3 currentEuler = Camera.transform.rotation.eulerAngles;
-        Quaternion startRot = Camera.transform.rotation;
-        Quaternion endRot = Quaternion.Euler(0f, currentEuler.y, currentEuler.z);
+        if (grabbedObject == null) return;
+
+        Vector3 startPos = Camera.transform.position;
+        Vector3 dir = Camera.transform.forward;
         
-        while (t <= 1f)
+        // 물체의 크기와 회전값을 그대로 반영한 두꺼운 박스 레이 발사 (모든 충돌체 감지)
+        RaycastHit[] hits = Physics.BoxCastAll(startPos, objectBoxSize, dir, grabbedObject.transform.rotation, holdDistance);
+        
+        float targetDistance = holdDistance;
+
+        // 거리가 가까운 순서대로 정렬하여 정밀도 향상
+        System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
+
+        foreach (RaycastHit hit in hits)
         {
-            t += Time.deltaTime / time;
-            Camera.transform.rotation = Quaternion.Lerp(startRot, endRot, t);
-            yield return null;
+            // 예외 1: 자기 자신 콜라이더는 패스
+            if (hit.collider.gameObject == grabbedObject) continue;
+            
+            // 예외 2: 플레이어 본인 몸통 패스
+            if (player != null && hit.collider.transform.root == player.transform.root) continue;
+            
+            // 예외 3: 맵에 배치된 투명한 감지 영역(Trigger) 패스 (진짜 물리 콜라이더만 막히게)
+            if (hit.collider.isTrigger) continue;
+
+            // [수정 핵심]: 벽, 바닥뿐만 아니라 '다른 물체들'에 부딪혀도 거기를 마지노선으로 잡고 멈춤
+            targetDistance = hit.distance;
+            break;
         }
+
+        // 최소 마지노선 거리와 최대 유지 거리 사이로 안전하게 고정
+        targetDistance = Mathf.Clamp(targetDistance, minHoldDistance, holdDistance);
+
+        // 부드럽고 묵직하게 목적지로 이동 처리
+        Vector3 targetPos = startPos + dir * targetDistance;
+        grabbedObject.transform.position = Vector3.Lerp(grabbedObject.transform.position, targetPos, Time.deltaTime * 25f);
     }
 
-    void HoldObject()
+    void ReleaseObject()
     {
-        Vector3 targetPos = Camera.transform.position + Camera.transform.forward * holdDistance;
-        // Vector3 direction = targetPos - grabbedObject.transform.position;
-        //
-        // objectRb.linearVelocity = direction * moveSpeed;
+        if (grabbedObject == null || objectRb == null) return;
 
-        grabbedObject.transform.position = targetPos;
-    }
+        // 놓을 때는 원래대로 단단한 고체 콜라이더로 복구
+        if (grabbedCollider != null) grabbedCollider.isTrigger = false;
 
-    void RotateObject()
-    {
-        float x = rotateInput.x * rotateSpeed;
-        float y = rotateInput.y * rotateSpeed;
-
-        grabbedObject.transform.Rotate(Camera.transform.up, -x, Space.World);
-        grabbedObject.transform.Rotate(Camera.transform.right, y, Space.World);
-    }
-
-    void DropObject() => StartCoroutine(BackToConveyor(time));
-
-    IEnumerator BackToConveyor(float time)
-    {
-        isHolding = false;
-        isReturning = true;
-        
-        float t = 0f;
-        Vector3 startPos = grabbedObject.transform.position;
-        Quaternion startRot = grabbedObject.transform.rotation;
-
-        while (t <= 1f)
-        {
-            t += Time.deltaTime / time;
-            grabbedObject.transform.position = Vector3.Lerp(startPos, lastConveyorPos, t);
-            grabbedObject.transform.rotation = Quaternion.Lerp(startRot, lastConveyorRot, t);
-            yield return null;
-        }
-        
-        // grabbedObject관련 변수 초기화
-        objectRb.useGravity = true;
+        objectRb.isKinematic = false;
+        objectRb.useGravity = true; 
         objectRb.freezeRotation = false;
-        objectRb.linearVelocity = Vector3.zero;
         
+        objectRb.linearVelocity = Vector3.zero;
+        objectRb.angularVelocity = Vector3.zero;
+
+        isHolding = false;
+    }
+
+    void DropObject()
+    {
+        ReleaseObject();
+        grabbedCollider = null;
         objectRb = null;
         grabbedObject = null;
-        isReturning = false;
+    }
+    
+    void ThrowObject()
+    {
+        Rigidbody rbToThrow = objectRb; 
+        ReleaseObject();
+        
+        Vector3 throwDirection = (Camera.transform.forward + Camera.transform.up * 0.1f).normalized;
+        float throwForce = 10f; 
+        
+        rbToThrow.AddForce(throwDirection * throwForce, ForceMode.Impulse);
+        
+        grabbedCollider = null;
+        objectRb = null;
+        grabbedObject = null;
     }
 }
