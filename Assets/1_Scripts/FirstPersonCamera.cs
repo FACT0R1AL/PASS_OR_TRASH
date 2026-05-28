@@ -6,7 +6,6 @@ public class FirstPersonCamera : MonoBehaviour
 {
     [Header("Player")]
     public GameObject player;
-    private Collider playerCollider; 
     
     [Header("Look")]
     public float sensitivity = 100f;
@@ -18,30 +17,24 @@ public class FirstPersonCamera : MonoBehaviour
     [Header("Grab Settings")] 
     public float grabDistance;
     public float holdDistance;
-    public float rotateSpeed = 250f; 
-    public float lerpSpeed = 20f; // 물체가 카메라 앞을 쫓아오는 속도
+    public float minHoldDistance = 0.5f; // 카메라 침범 방지 최소 거리
+    public float rotateSpeed = 250f;
     
     [Header("About GrabbedObject")]
     [SerializeField] private GameObject grabbedObject;
     [SerializeField] private Rigidbody objectRb;
     [SerializeField] private Collider grabbedCollider; 
     [SerializeField] private bool isHolding;
-    [SerializeField] private bool isReturning;
-    
-    void Start()
-    {
-        if (player != null)
-        {
-            playerCollider = player.GetComponent<Collider>();
-            if (playerCollider == null)
-            {
-                playerCollider = player.GetComponentInParent<Collider>();
-            }
-        }
-    }
+
+    private Vector3 objectBoxSize; // 물체의 실제 크기(Box형태 부피) 저장용
 
     void Update()
     {
+        if (isHolding)
+        {
+            HoldObjectWithBoxCast();
+        }
+
         if (Mouse.current != null)
         {
             if (isHolding && Mouse.current.leftButton.isPressed)
@@ -52,15 +45,6 @@ public class FirstPersonCamera : MonoBehaviour
             {
                 RotateCamera();
             }
-        }
-    }
-
-    // 물리 이동은 FixedUpdate에서 처리해야 벽 관통과 떨림이 방지됩니다.
-    void FixedUpdate()
-    {
-        if (isHolding)
-        {
-            HoldObjectPhysics();
         }
     }
     
@@ -123,80 +107,104 @@ public class FirstPersonCamera : MonoBehaviour
                 objectRb = grabbedObject.GetComponent<Rigidbody>();
                 grabbedCollider = grabbedObject.GetComponent<Collider>();
                 
-                // 잡고 있을 때는 중력을 끄고, 힘으로 제어합니다.
-                objectRb.useGravity = false; 
-                objectRb.isKinematic = false; 
-                objectRb.freezeRotation = true;
-                
-                // 공중에서 덜덜거리며 진동하는 것을 막기 위해 공기 저항을 높입니다.
-                objectRb.linearDamping = 10f; 
-                objectRb.angularDamping = 10f;
-
-                isHolding = true;
-
-                // 플레이어와 물체 간의 물리적 충돌만 꺼서 플레이어가 밀리는 현상 방지
-                if (playerCollider != null && grabbedCollider != null)
+                // 물체의 실제 콜라이더 크기(바운드 외곽)를 계산해서 저장
+                if (grabbedCollider != null)
                 {
-                    Physics.IgnoreCollision(playerCollider, grabbedCollider, true);
+                    objectBoxSize = grabbedCollider.bounds.extents;
                 }
+                else
+                {
+                    objectBoxSize = new Vector3(0.3f, 0.3f, 0.3f);
+                }
+
+                // 플레이어를 밀쳐서 날아오르는 버그 방지를 위해 트리거 모드 ON
+                if (grabbedCollider != null) grabbedCollider.isTrigger = true;
+
+                objectRb.useGravity = false; 
+                objectRb.isKinematic = true; 
+                objectRb.freezeRotation = true;
+                isHolding = true;
             }
         }
     }
 
-    void HoldObjectPhysics()
+    // ★ 다른 물체(오브젝트)들까지 가로막는 장애물로 인식하도록 수정된 핵심 로직
+    void HoldObjectWithBoxCast()
+    {
+        if (grabbedObject == null) return;
+
+        Vector3 startPos = Camera.transform.position;
+        Vector3 dir = Camera.transform.forward;
+        
+        // 물체의 크기와 회전값을 그대로 반영한 두꺼운 박스 레이 발사 (모든 충돌체 감지)
+        RaycastHit[] hits = Physics.BoxCastAll(startPos, objectBoxSize, dir, grabbedObject.transform.rotation, holdDistance);
+        
+        float targetDistance = holdDistance;
+
+        // 거리가 가까운 순서대로 정렬하여 정밀도 향상
+        System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
+
+        foreach (RaycastHit hit in hits)
+        {
+            // 예외 1: 자기 자신 콜라이더는 패스
+            if (hit.collider.gameObject == grabbedObject) continue;
+            
+            // 예외 2: 플레이어 본인 몸통 패스
+            if (player != null && hit.collider.transform.root == player.transform.root) continue;
+            
+            // 예외 3: 맵에 배치된 투명한 감지 영역(Trigger) 패스 (진짜 물리 콜라이더만 막히게)
+            if (hit.collider.isTrigger) continue;
+
+            // [수정 핵심]: 벽, 바닥뿐만 아니라 '다른 물체들'에 부딪혀도 거기를 마지노선으로 잡고 멈춤
+            targetDistance = hit.distance;
+            break;
+        }
+
+        // 최소 마지노선 거리와 최대 유지 거리 사이로 안전하게 고정
+        targetDistance = Mathf.Clamp(targetDistance, minHoldDistance, holdDistance);
+
+        // 부드럽고 묵직하게 목적지로 이동 처리
+        Vector3 targetPos = startPos + dir * targetDistance;
+        grabbedObject.transform.position = Vector3.Lerp(grabbedObject.transform.position, targetPos, Time.deltaTime * 25f);
+    }
+
+    void ReleaseObject()
     {
         if (grabbedObject == null || objectRb == null) return;
 
-        // 카메라 앞 목표 좌표
-        Vector3 targetPos = Camera.transform.position + Camera.transform.forward * holdDistance;
-        
-        // 방향 벡터 계산
-        Vector3 moveDirection = targetPos - grabbedObject.transform.position;
-        
-        // Rigidbody 속도로 밀어주어 벽이나 바닥에 부딪히면 물리적으로 멈추게 합니다.
-        objectRb.linearVelocity = moveDirection * lerpSpeed;
-    }
+        // 놓을 때는 원래대로 단단한 고체 콜라이더로 복구
+        if (grabbedCollider != null) grabbedCollider.isTrigger = false;
 
-    // ★ 중력 및 모든 물리 설정을 완벽하게 되돌리는 리셋 함수
-    void ResetObjectPhysics()
-    {
-        if (playerCollider != null && grabbedCollider != null)
-        {
-            Physics.IgnoreCollision(playerCollider, grabbedCollider, false);
-        }
+        objectRb.isKinematic = false;
+        objectRb.useGravity = true; 
+        objectRb.freezeRotation = false;
+        
+        objectRb.linearVelocity = Vector3.zero;
+        objectRb.angularVelocity = Vector3.zero;
 
-        if (objectRb != null)
-        {
-            objectRb.useGravity = true;     // ★ 중력 다시 켜기 복구
-            objectRb.isKinematic = false;
-            objectRb.linearDamping = 0f;    // 저항값 원래대로 복구
-            objectRb.angularDamping = 0.05f;
-            objectRb.freezeRotation = false;
-        }
+        isHolding = false;
     }
 
     void DropObject()
     {
-        ResetObjectPhysics();
-        isHolding = false;
-        
-        objectRb = null;
+        ReleaseObject();
         grabbedCollider = null;
+        objectRb = null;
         grabbedObject = null;
     }
     
     void ThrowObject()
     {
-        ResetObjectPhysics();
-        isHolding = false;
+        Rigidbody rbToThrow = objectRb; 
+        ReleaseObject();
         
-        Vector3 throwDirection = (Camera.transform.forward + Camera.transform.up * 0.2f).normalized;
-        float throwForce = 12f; 
+        Vector3 throwDirection = (Camera.transform.forward + Camera.transform.up * 0.1f).normalized;
+        float throwForce = 10f; 
         
-        objectRb.AddForce(throwDirection * throwForce, ForceMode.Impulse);
+        rbToThrow.AddForce(throwDirection * throwForce, ForceMode.Impulse);
         
-        objectRb = null;
         grabbedCollider = null;
+        objectRb = null;
         grabbedObject = null;
     }
 }

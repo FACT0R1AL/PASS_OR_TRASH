@@ -393,13 +393,12 @@ MonoBehaviour:
   Camera: {fileID: 330585543}
   grabDistance: 5
   holdDistance: 1.3
+  minHoldDistance: 0.5
   rotateSpeed: 180
-  lerpSpeed: 20
   grabbedObject: {fileID: 0}
   objectRb: {fileID: 0}
   grabbedCollider: {fileID: 0}
   isHolding: 0
-  isReturning: 0
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -974,7 +973,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -1045,7 +1044,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.63, z: -1.856}
-  m_LocalScale: {x: 0.05, y: 1.5, z: 0.05}
+  m_LocalScale: {x: 0.1, y: 1.5, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 330585546}
