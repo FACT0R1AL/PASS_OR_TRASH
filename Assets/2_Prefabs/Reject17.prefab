@@ -114,10 +114,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f23b161ba4c5a4c3280315fecd6780b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: 
-  itemDescription: 
-  isTrashProduct: 0
-  itemImage: {fileID: 0}
+  itemName: SAMSUNG
+  itemDescription: 'BEST PHONE IN THE WORLD.
+
+    BETTER THAN IPHONE'
+  isTrashProduct: 1
+  itemSprites: []
 --- !u!65 &-3591747653491768640
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -137,8 +139,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.2, y: 0.3, z: 2.2}
-  m_Center: {x: 0, y: 0, z: -0.1}
+  m_Size: {x: 0.4, y: 0.1, z: 0.9}
+  m_Center: {x: 0, y: 0, z: -0.03}
 --- !u!54 &469165168468411865
 Rigidbody:
   m_ObjectHideFlags: 0

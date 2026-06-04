@@ -114,10 +114,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f23b161ba4c5a4c3280315fecd6780b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: 
-  itemDescription: 
-  isTrashProduct: 0
-  itemImage: {fileID: 0}
+  itemName: SAMSUNG
+  itemDescription: 'BEST PHONE IN THE WORLD.
+
+    BETTER THAN IPHONE'
+  isTrashProduct: 1
+  itemSprites: []
 --- !u!65 &-5641237799906938434
 BoxCollider:
   m_ObjectHideFlags: 0
