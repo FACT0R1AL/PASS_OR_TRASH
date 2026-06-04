@@ -77,6 +77,9 @@ PrefabInstance:
       addedObject: {fileID: -2665099190831801453}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bd356a7fde93d4e2299e1f8870f45bbb, type: 3}
       insertIndex: -1
+      addedObject: {fileID: -4302892417410175489}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bd356a7fde93d4e2299e1f8870f45bbb, type: 3}
+      insertIndex: -1
       addedObject: {fileID: -8207181124013066277}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: bd356a7fde93d4e2299e1f8870f45bbb, type: 3}
       insertIndex: -1
@@ -99,6 +102,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3f5ff9052a94ef99c93ac143e66297, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemMove
+--- !u!114 &-4302892417410175489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7696859329125424638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f23b161ba4c5a4c3280315fecd6780b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: 
+  itemDescription: 
+  isTrashProduct: 0
+  itemImage: {fileID: 0}
 --- !u!65 &-8207181124013066277
 BoxCollider:
   m_ObjectHideFlags: 0

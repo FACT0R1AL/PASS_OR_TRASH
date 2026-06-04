@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "Item/ItemData", order = 1)]
-public class ItemData : ScriptableObject
+public class ItemData : MonoBehaviour
 {
     public string itemName;
     public string itemDescription;
@@ -12,5 +11,11 @@ public class ItemData : ScriptableObject
 
     public bool isTrashProduct;
 
-    public Sprite itemImage;
+    public Sprite[] itemSprites;
+    // 0 Front
+    // 1 Back
+    // 2 Left
+    // 3 Right
+    // 4 Up
+    // 5 Down
 }

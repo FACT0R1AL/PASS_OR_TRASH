@@ -141,6 +141,5 @@ public class ItemBookController : MonoBehaviour
         // 데이터 적용
         if(nameLabel != null) nameLabel.text = currentData.itemName;
         if(descLabel != null) descLabel.text = currentData.itemDescription;
-        if(itemBookPopupImage != null) itemBookPopupImage.sprite = currentData.itemImage;
     }
 }

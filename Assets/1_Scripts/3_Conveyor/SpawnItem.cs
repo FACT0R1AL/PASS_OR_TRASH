@@ -4,8 +4,7 @@ using UnityEngine;
 public class SpawnItem : MonoBehaviour
 {
     public GameObject[] items;
-    public ItemData[] itemData;
-
+    
     public float startRandom;
     public float endRandom;
 
