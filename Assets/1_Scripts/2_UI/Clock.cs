@@ -36,9 +36,6 @@ public class Clock : MonoBehaviour
         }
 
         ResetClock();
-        
-        // 시간 분 단위로 변환 
-        currentTimeInSeconds = startHour * 60f;
     }
 
 
@@ -95,6 +92,9 @@ public class Clock : MonoBehaviour
             color.a = 1f;
             endPanelImage.color = color;
 
+            // 날짜 하루 증가
+            Date.Instance.AdvanceDay();
+
             currentTimeInSeconds = startHour * 60f;
             clockText.text = $"{(int)startHour:00}:00"; 
 
@@ -108,6 +108,7 @@ public class Clock : MonoBehaviour
                 timer += Time.deltaTime;
                 color.a = Mathf.Lerp(1f, 0f, timer / fadeOutSpeed);
                 endPanelImage.color = color;
+                endPanel.SetActive(false);
                 yield return null;
             }
         }
@@ -116,3 +117,4 @@ public class Clock : MonoBehaviour
     }
 
 }
+

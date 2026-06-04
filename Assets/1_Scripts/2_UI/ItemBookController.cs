@@ -7,17 +7,17 @@ using System.Collections;
 public class ItemBookController : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private GameObject itemBookButton; // 도감 버튼
-    [SerializeField] private TextMeshProUGUI nameLabel; // 아이템 이름 표시
-    [SerializeField] private TextMeshProUGUI descLabel; // 아이템 설명 표시
-    [SerializeField] private Image itemBookPopupImage;  // 아이템 이미지
-    [SerializeField] private RectTransform bookPopupRect;   // 도감 배경이미지
+    public GameObject itemBookButton; // 도감 버튼
+    public TextMeshProUGUI nameLabel; // 아이템 이름 표시
+    public TextMeshProUGUI descLabel; // 아이템 설명 표시
+    public Image itemBookPopupImage;  // 아이템 이미지
+    public RectTransform bookPopupRect;   // 도감 배경이미지
 
     [Header("Setting")]
-    [SerializeField] private float animationDelay = 0.25f;   // 애니메이션 재생
+    public float animationDelay = 0.25f;   // 애니메이션 재생
 
     [Header("DB")]
-    [SerializeField] private List<ItemData> itemDatabase = new List<ItemData>();
+    public List<ItemData> itemDatabase = new List<ItemData>();
 
     private int currentIndex = 0;
     private bool isAnimating = false;   // 애니메이션 실행 중복 방지용
@@ -109,11 +109,12 @@ public class ItemBookController : MonoBehaviour
 
     // 좌하단 화살표(다음 아이템)
     public void ShowNextItem()
-    {
+    {   
         if(itemDatabase.Count == 0) return;
 
         // 순환 (1 -> 10)
         currentIndex = (currentIndex + 1) % itemDatabase.Count;
+        Debug.Log("책이 오른쪽으로 넘어감");
         RefreshUI();
     }
 
@@ -124,6 +125,7 @@ public class ItemBookController : MonoBehaviour
 
         // 순환(10 -> 1)
         currentIndex = (currentIndex - 1 + itemDatabase.Count) % itemDatabase.Count;
+        Debug.Log("책이 왼쪽으로 넘어감");
         RefreshUI();
     }
 
