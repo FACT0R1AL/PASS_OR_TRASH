@@ -27,7 +27,7 @@ public class FirstPersonCamera : MonoBehaviour
     [SerializeField] private bool isHolding;
 
     private Vector3 objectBoxSize; // 물체의 실제 크기(Box형태 부피) 저장용
-
+    
     void Update()
     {
         if (isHolding)

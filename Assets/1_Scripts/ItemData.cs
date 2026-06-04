@@ -4,7 +4,7 @@ using UnityEngine;
 public class ItemData : MonoBehaviour
 {
     public string itemName;
-    public string itemDescription;
+    [TextArea] public string itemDescription;
 
     public DateTime itemExpireDate;
     public DateTime itemCreateDate;
