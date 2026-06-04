@@ -1468,7 +1468,7 @@ GameObject:
   - component: {fileID: 1479941872}
   - component: {fileID: 1479941871}
   m_Layer: 5
-  m_Name: ItemImageBack
+  m_Name: ItemImageLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1796,7 +1796,7 @@ GameObject:
   - component: {fileID: 1772583084}
   - component: {fileID: 1772583083}
   m_Layer: 5
-  m_Name: ItemImageLeft
+  m_Name: ItemImageBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
