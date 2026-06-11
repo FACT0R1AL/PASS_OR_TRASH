@@ -1124,28 +1124,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47a3c0d86815e475a9a9d4c20f757485, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnItem
-  items:
-  - {fileID: 7696859329125424638, guid: 2b551be623fe14ebabcfbff37ec8cad7, type: 3}
-  - {fileID: 3247068341435703571, guid: ac1dfe6596d6245ff93ae065087608ed, type: 3}
-  - {fileID: 5859571095849450792, guid: 0cd1384e493b9468984b9c125c243e4e, type: 3}
-  - {fileID: 7968687740896369501, guid: 6d74baafafdad41819315cb5ce66b99e, type: 3}
-  - {fileID: 8876516923049719494, guid: 6f569af273ed0421b9189be84922de77, type: 3}
-  - {fileID: 836400894417182972, guid: 75a384f125281428bbd0b1a2b3cbb1b3, type: 3}
-  - {fileID: 7335232338347465393, guid: 1b6095e8f0e3043f9bb466b4f063f9ba, type: 3}
-  - {fileID: 2946469023669570453, guid: 5ee5b0b68d79c4b6bab6d66293b322ed, type: 3}
-  - {fileID: 4460216122854594772, guid: cf0045072e3d040bb94ece27ed3f6aab, type: 3}
-  - {fileID: 4892621562445890714, guid: d6027779e92a74a73a81e852cb1e0034, type: 3}
-  - {fileID: 3589834589757822343, guid: 87f9e0326ef9f41b59ebcbee53f69ebe, type: 3}
-  - {fileID: 3295238664741314868, guid: d227fd1f74ebb4025891edca684dde76, type: 3}
-  - {fileID: 6827572102177062915, guid: 204e4f274f307422f814818eed0d377a, type: 3}
-  - {fileID: 2629795148595122166, guid: bf65337e4488e4f889c7a62b21134b7b, type: 3}
-  - {fileID: 4873104846398952753, guid: f4960f4acc0c14994b7551fd0c35920a, type: 3}
-  - {fileID: 6002077914880815483, guid: 2ca593153da154c27af052d84f6fd672, type: 3}
-  - {fileID: 3830880942333101149, guid: 1634f202b1a7c497a9534e4f9ba473ad, type: 3}
-  - {fileID: 2420820926563526339, guid: a0313e7b9b2c14bf88ca95631bae7359, type: 3}
-  - {fileID: 5217167373028234858, guid: d0e7470d844124a61be5412a194d6a33, type: 3}
-  - {fileID: 2120828146710139, guid: a993b93c1b6eb42868d8d0ced5738386, type: 3}
-  - {fileID: 9042162578875759159, guid: bd8be615f7fe649e88f02c45605f1642, type: 3}
   startRandom: 19
   endRandom: 20
 --- !u!1 &1733715126
