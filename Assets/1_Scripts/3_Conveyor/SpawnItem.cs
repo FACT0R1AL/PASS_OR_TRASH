@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
-
-public class 
+ 
 public class SpawnItem : MonoBehaviour
 {
     public GameObject[] items;
