@@ -13,7 +13,7 @@ public class Productcan : MonoBehaviour
             
             Destroy(other.gameObject);
             
-            if (itemData.isTrashProduct)
+            if (itemData.isTrash)
             {
                 OnEndProduct?.Invoke();
                 Debug.Log("THERE IS TRASH AHHHHHHHHH!!!!");

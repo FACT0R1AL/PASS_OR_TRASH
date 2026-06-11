@@ -9,7 +9,7 @@ public class ItemData : MonoBehaviour
     public DateTime itemExpireDate;
     public DateTime itemCreateDate;
 
-    public bool isTrashProduct;
+    public bool isTrash;
 
     public Sprite[] itemSprites;
     // 0 Front
